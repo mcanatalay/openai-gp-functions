@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GPT Function Declarations",
+  "description": "This schema describes the function declarations for a GPT product",
+  "properties": {
+    "version": {
+      "description": "Definition version of GPT Functions Schema",
+      "type": "string",
+      "enum": [ "1.0.0" ]
+    },
+    "language": {
+      "description": "Language of the product",
+      "type": "string",
+      "enum": [ "JAVA" ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "version": { "const": "1.0.0" } }
+      },
+      "then": {
+        "properties": {
+          "namespaces": {
+            "description": "Namespaces that will contain functions",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(?!ALL)([A-Z0-9]*)$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "version": { "const": "1.0.0" }, "language": { "const": "JAVA" } }
+      },
+      "then": {
+        "properties": {
+          "functions": {
+            "type": "object",
+            "description": "Functions of the product",
+            "patternProperties": {
+              "^[a-zA-Z0-9_-]{0,64}$": {
+                "type": "object",
+                "description": "Function declaration",
+                "properties": {
+                  "class": {
+                    "description": "Class of the function (e.g. io.company.product.Class)",
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+[0-9a-z_]\\.[A-Z][a-zA-Z0-9_]*$"
+                  },
+                  "method": {
+                    "description": "Method name of the function (e.g. method)",
+                    "type": "string",
+                    "pattern": "^[a-z][a-zA-Z0-9]*$"
+                  },
+                  "description": {
+                    "description": "Description of the function",
+                    "type": "string"
+                  },
+                  "parameters": {
+                    "type": "object",
+                    "description": "Parameters of the function",
+                    "allOf": [ { "$ref": "http://json-schema.org/draft-07/schema#" }],
+                    "properties": {
+                      "type": {
+                        "const": "object"
+                      }
+                    }
+                  },
+                  "namespaces": {
+                    "description": "Namespaces that will contain the function",
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[A-Z0-9]*$"
+                    }
+                  }
+                },
+                "required": [ "class", "method", "parameters" ],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  ],
+  "required": [ "version", "language" ]
+}
